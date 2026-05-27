@@ -2,21 +2,25 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой Планировщик</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); }
-        input { width: 80%; padding: 10px; margin-bottom: 10px; }
-        button { padding: 10px 20px; background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); border: none; border-radius: 8px; }
+        body { font-family: sans-serif; padding: 15px; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); }
+        .input-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
+        input { padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+        button { padding: 10px; background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); border: none; border-radius: 8px; }
         ul { list-style: none; padding: 0; }
-        li { background: #eee; margin: 5px 0; padding: 10px; border-radius: 5px; color: black; }
+        li { background: var(--tg-theme-secondary-bg-color); margin: 8px 0; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px; }
+        .done { text-decoration: line-through; opacity: 0.6; }
     </style>
 </head>
 <body>
-    <h1>Мои дела</h1>
-    <input type="text" id="todoInput" placeholder="Что нужно сделать?">
-    <button onclick="addTodo()">Добавить</button>
+    <h1>Дела</h1>
+    <div class="input-group">
+        <input type="text" id="todoInput" placeholder="Что сделать?">
+        <input type="datetime-local" id="todoDate">
+    </div>
+    <button onclick="addTodo()">Добавить в список</button>
     <ul id="todoList"></ul>
 
     <script>
@@ -24,13 +28,20 @@
         tg.ready();
         
         function addTodo() {
-            let input = document.getElementById('todoInput');
-            if (input.value) {
-                let li = document.createElement('li');
-                li.innerText = input.value;
-                document.getElementById('todoList').appendChild(li);
-                input.value = '';
-            }
+            let text = document.getElementById('todoInput').value;
+            let date = document.getElementById('todoDate').value;
+            if (!text) return;
+
+            let li = document.createElement('li');
+            li.innerHTML = `<input type="checkbox" onchange="toggleDone(this)"> 
+                            <span>${text} <br><small>${date.replace('T', ' ')}</small></span>`;
+            
+            document.getElementById('todoList').appendChild(li);
+            document.getElementById('todoInput').value = '';
+        }
+
+        function toggleDone(checkbox) {
+            checkbox.nextElementSibling.classList.toggle('done');
         }
     </script>
 </body>
