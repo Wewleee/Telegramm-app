@@ -20,28 +20,43 @@
         <input type="text" id="todoInput" placeholder="Что сделать?">
         <input type="datetime-local" id="todoDate">
     </div>
-    <button onclick="addTodo()">Добавить в список</button>
+    <button onclick="addTodo()">Добавить</button>
     <ul id="todoList"></ul>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.ready();
-        
+        let todoListElement = document.getElementById('todoList');
+
+        // Загружаем данные при открытии приложения
+        window.onload = function() {
+            let savedTodos = localStorage.getItem('myTodos');
+            if (savedTodos) {
+                todoListElement.innerHTML = savedTodos;
+            }
+        };
+
         function addTodo() {
             let text = document.getElementById('todoInput').value;
             let date = document.getElementById('todoDate').value;
             if (!text) return;
 
             let li = document.createElement('li');
-            li.innerHTML = `<input type="checkbox" onchange="toggleDone(this)"> 
+            li.innerHTML = `<input type="checkbox" onchange="saveAndToggle(this)"> 
                             <span>${text} <br><small>${date.replace('T', ' ')}</small></span>`;
             
-            document.getElementById('todoList').appendChild(li);
+            todoListElement.appendChild(li);
             document.getElementById('todoInput').value = '';
+            saveTodos(); // Сохраняем после добавления
         }
 
-        function toggleDone(checkbox) {
+        function saveAndToggle(checkbox) {
             checkbox.nextElementSibling.classList.toggle('done');
+            saveTodos(); // Сохраняем после изменения статуса
+        }
+
+        function saveTodos() {
+            localStorage.setItem('myTodos', todoListElement.innerHTML);
         }
     </script>
 </body>
